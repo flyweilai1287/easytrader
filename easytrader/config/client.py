@@ -114,7 +114,7 @@ class HT(CommonConfig):
 
 
 class GJ(CommonConfig):
-    DEFAULT_EXE_PATH = "C:\\全能行证券交易终端\\xiadan.exe"
+    DEFAULT_EXE_PATH = "C:\\app\\全能行证券交易终端\\xiadan.exe"
 
     GRID_DTYPE = {
         "操作日期": str,

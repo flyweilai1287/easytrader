@@ -75,3 +75,6 @@ target/
 tmp/
 
 secrets/
+
+venv/
+
