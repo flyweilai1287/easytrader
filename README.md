@@ -54,3 +54,11 @@
 ### 其他
 
 [软件实现原理](http://www.jisilu.cn/question/42707)
+
+===========================================================================================
+### 国金调试和修改内容（20190122）
+
+* 国金登录有用户名，密码和验证码，验证码需要依赖验证码识别的服务，`https://github.com/flyweilai1287/verify_code_docker.git`
+* 验证码服务部署好以后，需要修改helpers.py的detect_yh_client_result方法，将api改成验证码服务的地址
+* 修改config/client.py文件中的117行，GJ类下的DEFAULT_EXE_PATH变量，修改为国金客户端的安装地址
+* 运行test_gj_easytrader.py做一些简单测试，验证是否能登录成功和查询到balances
