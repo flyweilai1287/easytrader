@@ -37,6 +37,8 @@ class TestGjClientTrader(unittest.TestCase):
         time.sleep(3)
         result = self._user.balance
         print(result)
+        res=self._user.position
+        print(res)
     def login(self):
         _ACCOUNT = os.environ.get("EZ_TEST_YH_ACCOUNT") or "your account"
         _PASSWORD = (
