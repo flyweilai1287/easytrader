@@ -3,6 +3,7 @@ import abc
 import functools
 import os
 import sys
+import threading
 import time
 from typing import Type
 
@@ -15,6 +16,25 @@ if not sys.platform.startswith("darwin"):
     import pywinauto
     import pywinauto.clipboard
 
+threadLock = threading.Lock()
+
+
+def thread_safe(func):
+    '''
+    线程安全的，该方法只能有一个线程再执行，加上该注释的所有方法只能有一个方法在执行
+
+    :param func: prepare方法
+    :return: 处理过的prepare方法
+    '''
+    def thread_safe(self, *args, **kwargs):
+        threadLock.acquire()
+        time.sleep(0.2)
+        print('%s 执行 %s 开始' %(time.time(),str(func.__name__)))
+        result=func(self, *args, **kwargs)
+        print('%s 执行 %s 完成' % (time.time(), str(func.__name__)))
+        threadLock.release()
+        return result
+    return thread_safe
 
 class IClientTrader(abc.ABC):
     @property
@@ -48,7 +68,7 @@ class IClientTrader(abc.ABC):
 
 class ClientTrader(IClientTrader):
     # The strategy to use for getting grid data
-    grid_strategy: Type[grid_strategies.IGridStrategy] = grid_strategies.Copy
+    grid_strategy: Type[grid_strategies.IGridStrategy] = grid_strategies.Xls
 
     def __init__(self):
         self._config = client.create(self.broker_type)
@@ -90,6 +110,7 @@ class ClientTrader(IClientTrader):
         return "ths"
 
     @property
+    @thread_safe
     def balance(self):
         self._switch_left_menus(["查询[F4]", "资金股票"])
 
@@ -106,30 +127,35 @@ class ClientTrader(IClientTrader):
         return result
 
     @property
+    @thread_safe
     def position(self):
         self._switch_left_menus(["查询[F4]", "资金股票"])
 
         return self._get_grid_data(self._config.COMMON_GRID_CONTROL_ID)
 
     @property
+    @thread_safe
     def today_entrusts(self):
         self._switch_left_menus(["查询[F4]", "当日委托"])
 
         return self._get_grid_data(self._config.COMMON_GRID_CONTROL_ID)
 
     @property
+    @thread_safe
     def today_trades(self):
         self._switch_left_menus(["查询[F4]", "当日成交"])
 
         return self._get_grid_data(self._config.COMMON_GRID_CONTROL_ID)
 
     @property
+    @thread_safe
     def cancel_entrusts(self):
         self.refresh()
         self._switch_left_menus(["撤单[F3]"])
 
         return self._get_grid_data(self._config.COMMON_GRID_CONTROL_ID)
 
+    @thread_safe
     def cancel_entrust(self, entrust_no):
         self.refresh()
         for i, entrust in enumerate(self.cancel_entrusts):
@@ -141,16 +167,19 @@ class ClientTrader(IClientTrader):
                 return self._handle_pop_dialogs()
         return {"message": "委托单状态错误不能撤单, 该委托单可能已经成交或者已撤"}
 
+    @thread_safe
     def buy(self, security, price, amount, **kwargs):
         self._switch_left_menus(["买入[F1]"])
 
         return self.trade(security, price, amount)
 
+    @thread_safe
     def sell(self, security, price, amount, **kwargs):
         self._switch_left_menus(["卖出[F2]"])
 
         return self.trade(security, price, amount)
 
+    @thread_safe
     def market_buy(self, security, amount, ttype=None, **kwargs):
         """
         市价买入
@@ -166,6 +195,7 @@ class ClientTrader(IClientTrader):
 
         return self.market_trade(security, amount, ttype)
 
+    @thread_safe
     def market_sell(self, security, amount, ttype=None, **kwargs):
         """
         市价卖出
@@ -217,6 +247,7 @@ class ClientTrader(IClientTrader):
         else:
             raise TypeError("不支持对应的市价类型: {}".format(ttype))
 
+    @thread_safe
     def auto_ipo(self):
         self._switch_left_menus(self._config.AUTO_IPO_MENU_PATH)
 
@@ -330,7 +361,18 @@ class ClientTrader(IClientTrader):
         self._type_keys(self._config.TRADE_AMOUNT_CONTROL_ID, str(int(amount)))
 
     def _get_grid_data(self, control_id):
-        return self.grid_strategy(self).get(control_id)
+        data= self.grid_strategy(self).get(control_id)
+        if type(data)==list:
+            for d in data:
+                if d.__contains__('证券代码'):
+                    d['证券代码']=str(d['证券代码']).replace('=','').replace('"','')
+                if d.__contains__('股东帐户'):
+                    d['股东帐户']=str(d['股东帐户']).replace('=','').replace('"','')
+                if d.__contains__('合同编号'):
+                    d['合同编号']=str(d['合同编号']).replace('=','').replace('"','')
+                if d.__contains__('备注'):
+                    d['备注']=str(d['备注']).replace(':','')
+        return data
 
     def _type_keys(self, control_id, text):
         self._main.window(

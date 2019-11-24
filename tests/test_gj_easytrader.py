@@ -11,6 +11,8 @@ TEST_CLIENTS = os.environ.get("EZ_TEST_CLIENTS", "")
 
 IS_WIN_PLATFORM = sys.platform != "darwin"
 
+account=''
+password=''
 
 class TestGjClientTrader(unittest.TestCase):
     @classmethod
@@ -18,18 +20,18 @@ class TestGjClientTrader(unittest.TestCase):
         import easytrader
 
         # input your test account and password
-        cls._ACCOUNT = os.environ.get("EZ_TEST_YH_ACCOUNT") or "your account"
+        cls._ACCOUNT = os.environ.get("EZ_TEST_YH_ACCOUNT") or account
         cls._PASSWORD = (
-            os.environ.get("EZ_TEST_YH_PASSWORD") or "your password"
+            os.environ.get("EZ_TEST_YH_PASSWORD") or password
         )
 
         cls._user = easytrader.use("gj_client")
         cls._user.prepare(user=cls._ACCOUNT, password=cls._PASSWORD)
 
     def test_balance(self):
-        _ACCOUNT = os.environ.get("EZ_TEST_YH_ACCOUNT") or "your account"
+        _ACCOUNT = os.environ.get("EZ_TEST_YH_ACCOUNT") or account
         _PASSWORD = (
-                os.environ.get("EZ_TEST_YH_PASSWORD") or "your password"
+                os.environ.get("EZ_TEST_YH_PASSWORD") or password
         )
 
         self._user = easytrader.use("gj_client")
@@ -40,9 +42,9 @@ class TestGjClientTrader(unittest.TestCase):
         res=self._user.position
         print(res)
     def login(self):
-        _ACCOUNT = os.environ.get("EZ_TEST_YH_ACCOUNT") or "your account"
+        _ACCOUNT = os.environ.get("EZ_TEST_YH_ACCOUNT") or account
         _PASSWORD = (
-                os.environ.get("EZ_TEST_YH_PASSWORD") or "your password"
+                os.environ.get("EZ_TEST_YH_PASSWORD") or password
         )
 
         self._user = easytrader.use("gj_client")

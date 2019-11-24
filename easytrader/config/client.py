@@ -6,6 +6,8 @@ def create(broker):
         return HT
     if broker == "gj":
         return GJ
+    if broker == 'ct':
+        return CT
     if broker == "ths":
         return CommonConfig
     raise NotImplementedError
@@ -129,3 +131,22 @@ class GJ(CommonConfig):
     }
 
     AUTO_IPO_MENU_PATH = ["新股申购", "新股批量申购"]
+
+
+class CT(CommonConfig):
+    DEFAULT_EXE_PATH = "C:\\app\\财通证券\\同花顺金融终端版\\xiadan.exe"
+
+    GRID_DTYPE = {
+        "操作日期": str,
+        "委托编号": str,
+        "申请编号": str,
+        "合同编号": str,
+        "证券代码": str,
+        "股东代码": str,
+        "资金帐号": str,
+        "资金帐户": str,
+        "发生日期": str,
+    }
+
+    AUTO_IPO_MENU_PATH = ["新股申购", "新股批量申购"]
+

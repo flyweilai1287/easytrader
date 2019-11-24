@@ -42,6 +42,10 @@ def use(broker, debug=True, **kwargs):
         from .gj_clienttrader import GJClientTrader
 
         return GJClientTrader()
+    if broker.lower() in ["ct_client", "财通客户端"]:
+        from .ct_clienttrader import CTClientTrader
+
+        return CTClientTrader()
     if broker.lower() in ["ths", "同花顺客户端"]:
         from .clienttrader import ClientTrader
 

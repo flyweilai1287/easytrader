@@ -103,11 +103,14 @@ class Xls(BaseStrategy):
         return temp_path.replace('~', '{~}')
 
     def _format_grid_data(self, data: str) -> List[Dict]:
-        df = pd.read_csv(
-            data,
-            encoding="gbk",
-            delimiter="\t",
-            dtype=self._trader.config.GRID_DTYPE,
-            na_filter=False,
-        )
-        return df.to_dict("records")
+        try:
+            df = pd.read_csv(
+                data,
+                encoding="gbk",
+                delimiter="\t",
+                dtype=self._trader.config.GRID_DTYPE,
+                na_filter=False,
+            )
+            return df.to_dict("records")
+        except:
+            return {}
