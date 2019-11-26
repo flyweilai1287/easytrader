@@ -119,11 +119,15 @@ class ClientTrader(IClientTrader):
     def _get_balance_from_statics(self):
         result = {}
         for key, control_id in self._config.BALANCE_CONTROL_ID_GROUP.items():
-            result[key] = float(
-                self._main.window(
-                    control_id=control_id, class_name="Static"
-                ).window_text()
-            )
+            try:
+                result[key] = float(
+                    self._main.window(
+                        control_id=control_id, class_name="Static"
+                    ).window_text()
+                )
+            except ValueError as e:
+                print('无法转换float，按照0处理')
+                result[key]=0.0
         return result
 
     @property
