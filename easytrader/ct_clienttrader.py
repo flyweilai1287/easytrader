@@ -76,7 +76,7 @@ class CTClientTrader(clienttrader.BaseLoginClientTrader):
             self.wait(5)
             self._close_prompt_windows()
         self._main = self._app.top_window()
-        print('财通客户端启动完成')
+        print('财通客户端启动完成...')
 
     def _handle_verify_code(self):
         control = self._app.top_window().window(control_id=0x5db)
