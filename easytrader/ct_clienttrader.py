@@ -71,8 +71,12 @@ class CTClientTrader(clienttrader.BaseLoginClientTrader):
                 path=self._run_exe_path(exe_path), timeout=10
             )
         # self._main = self._app.window(title="财通网上股票交易系统5.0")
-        self._close_prompt_windows()
+        print('关掉打开的无用的对话框')
+        for i in range(3):
+            self.wait(5)
+            self._close_prompt_windows()
         self._main = self._app.top_window()
+        print('财通客户端启动完成')
 
     def _handle_verify_code(self):
         control = self._app.top_window().window(control_id=0x5db)
