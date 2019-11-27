@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import abc
 import functools
+import logging
 import os
 import sys
 import threading
@@ -18,6 +19,8 @@ if not sys.platform.startswith("darwin"):
 
 threadLock = threading.Lock()
 
+logger = logging.getLogger(__name__)
+
 
 def thread_safe(func):
     '''
@@ -29,9 +32,11 @@ def thread_safe(func):
     def thread_safe(self, *args, **kwargs):
         threadLock.acquire()
         time.sleep(0.2)
-        print('%s 执行 %s 开始' %(time.time(),str(func.__name__)))
+        starttime=int(time.time())
+        logger.info('%s 执行 %s 开始' %(starttime,str(func.__name__)))
         result=func(self, *args, **kwargs)
-        print('%s 执行 %s 完成' % (time.time(), str(func.__name__)))
+        endtime=int(time.time())
+        logger.info('%s 执行 %s 完成,用时: %s s' % (endtime, str(func.__name__),(endtime-starttime)))
         threadLock.release()
         return result
     return thread_safe
@@ -423,7 +428,7 @@ class ClientTrader(IClientTrader):
         self, handler_class=pop_dialog_handler.PopDialogHandler
     ):
         handler = handler_class(self._app)
-
+        self.wait(0.5)
         while self._is_exist_pop_dialog():
             title = self._get_pop_dialog_title()
 

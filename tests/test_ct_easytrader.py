@@ -105,6 +105,8 @@ class TestCTClientTrader(unittest.TestCase):
         print(result)
     # def test_buy(self):
     #     self._user.buy('002027',5,100)
+    # def test_sell(self):
+    #     self._user.sell('002027',5.73,100)
 
 
 if __name__ == "__main__":
