@@ -318,6 +318,11 @@ class ClientTrader(IClientTrader):
         self.wait(1)
 
     def trade(self, security, price, amount):
+        #防止存在dialogs，先关闭 added by leo 20191202
+        self._handle_pop_dialogs(
+            handler_class=pop_dialog_handler.TradePopDialogHandler
+        )
+        # end 防止存在dialogs，先关闭 added by leo 20191202
         self._set_trade_params(security, price, amount)
 
         self._submit_trade()
@@ -428,7 +433,7 @@ class ClientTrader(IClientTrader):
         self, handler_class=pop_dialog_handler.PopDialogHandler
     ):
         handler = handler_class(self._app)
-        self.wait(0.5)
+        self.wait(0.2)
         while self._is_exist_pop_dialog():
             title = self._get_pop_dialog_title()
 
